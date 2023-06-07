@@ -1,0 +1,2 @@
+NSFaceIDUsageDescription = "Protect your data with biometric authentication";
+NSLocationWhenInUseUsageDescription = "Location services are used for you to be able to keep track of where your panic attacks happen, you can opt out of this anytime.";
