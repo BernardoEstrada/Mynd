@@ -7,6 +7,7 @@ A new Flutter project.
 FlutterFlow projects are built to run on the Flutter _stable_ release.
 
 Flutter: `3.7.12`
+
 Dart: `2.19.6`
 
 ### Getting started continued
