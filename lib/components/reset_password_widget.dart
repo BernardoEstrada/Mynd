@@ -32,6 +32,7 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
     _model = createModel(context, () => ResetPasswordModel());
 
     _model.emailAddressResetPassController ??= TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

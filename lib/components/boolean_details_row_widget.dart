@@ -36,6 +36,8 @@ class _BooleanDetailsRowWidgetState extends State<BooleanDetailsRowWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => BooleanDetailsRowModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

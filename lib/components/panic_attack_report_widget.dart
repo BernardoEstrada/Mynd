@@ -97,6 +97,8 @@ class _PanicAttackReportWidgetState extends State<PanicAttackReportWidget>
           !anim.applyInitialState),
       this,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

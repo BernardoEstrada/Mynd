@@ -34,6 +34,8 @@ class _DebugSheetWidgetState extends State<DebugSheetWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => DebugSheetModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

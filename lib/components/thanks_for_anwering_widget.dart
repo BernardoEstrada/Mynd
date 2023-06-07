@@ -31,6 +31,8 @@ class _ThanksForAnweringWidgetState extends State<ThanksForAnweringWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => ThanksForAnweringModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

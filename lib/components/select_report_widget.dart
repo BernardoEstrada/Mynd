@@ -37,6 +37,8 @@ class _SelectReportWidgetState extends State<SelectReportWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => SelectReportModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

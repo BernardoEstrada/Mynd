@@ -47,6 +47,8 @@ class _UndoDeleteRecordWidgetState extends State<UndoDeleteRecordWidget> {
         FFAppState().recentlyDeletedReport = '';
       });
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

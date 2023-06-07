@@ -233,6 +233,8 @@ class _MainPageWidgetState extends State<MainPageWidget>
         context.pushNamedAuth('UserInfo', context.mounted);
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
@@ -247,464 +249,283 @@ class _MainPageWidgetState extends State<MainPageWidget>
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_unfocusNode),
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () async {
-            await showModalBottomSheet(
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              context: context,
-              builder: (context) {
-                return GestureDetector(
-                  onTap: () =>
-                      FocusScope.of(context).requestFocus(_unfocusNode),
-                  child: Padding(
-                    padding: MediaQuery.of(context).viewInsets,
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      child: PanicAttackDataWidget(),
-                    ),
-                  ),
-                );
-              },
-            ).then((value) => setState(() {}));
-          },
-          backgroundColor: FlutterFlowTheme.of(context).tertiary,
-          icon: FaIcon(
-            FontAwesomeIcons.exclamationCircle,
-            color: FlutterFlowTheme.of(context).primaryText,
-            size: 25.0,
-          ),
-          elevation: 8.0,
-          label: Text(
-            FFLocalizations.of(context).getText(
-              'f3g1htjq' /* Log panic attack */,
-            ),
-            style: FlutterFlowTheme.of(context).titleMedium,
-          ),
-        ).animateOnPageLoad(
-            animationsMap['floatingActionButtonOnPageLoadAnimation']!),
-        appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-          automaticallyImplyLeading: false,
-          title: InkWell(
-            splashColor: Colors.transparent,
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            onDoubleTap: () async {
-              FFAppState().update(() {
-                FFAppState().debug = !FFAppState().debug;
-              });
-            },
-            child: Text(
-              FFLocalizations.of(context).getText(
-                '3hi10kxx' /* Home */,
-              ),
-              style: FlutterFlowTheme.of(context).headlineMedium.override(
-                    fontFamily: 'Poppins',
-                    color: FlutterFlowTheme.of(context).secondary,
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ),
-          actions: [
-            Align(
-              alignment: AlignmentDirectional(0.0, 0.0),
-              child: wrapWithModel(
-                model: _model.debugBtnModel,
-                updateCallback: () => setState(() {}),
-                child: DebugBtnWidget(),
-              ),
-            ),
-          ],
-          centerTitle: true,
-          elevation: 2.0,
-        ),
-        body: Align(
-          alignment: AlignmentDirectional(0.0, -1.0),
-          child: RefreshIndicator(
-            onRefresh: () async {
-              FFAppState().clearLatestReportsCache();
-              FFAppState().clearReportsSummaryCache();
-              setState(() {
-                FFAppState()
-                    .clearLatestReportsCacheKey(_model.requestLastUniqueKey1);
-                _model.requestCompleted1 = false;
-              });
-              await _model.waitForRequestCompleted1();
-              setState(() {
-                FFAppState()
-                    .clearReportsSummaryCacheKey(_model.requestLastUniqueKey2);
-                _model.requestCompleted2 = false;
-              });
-              await _model.waitForRequestCompleted2();
-            },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(0.0, 32.0, 0.0, 0.0),
-                    child: FutureBuilder<List<AttackReportsRow>>(
-                      future: FFAppState()
-                          .latestReports(
-                        uniqueQueryKey: dateTimeFromSecondsSinceEpoch(
-                                functions.unixTrunc(
-                                    getCurrentTimestamp.secondsSinceEpoch,
-                                    3600))
-                            .toString(),
-                        requestFn: () => AttackReportsTable().queryRows(
-                          queryFn: (q) => q
-                              .eq(
-                                'deleted',
-                                false,
-                              )
-                              .order('created_at'),
-                          limit: 7,
+    return Title(
+        title: 'MainPage',
+        color: FlutterFlowTheme.of(context).primary,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).requestFocus(_unfocusNode),
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: () async {
+                await showModalBottomSheet(
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  context: context,
+                  builder: (context) {
+                    return GestureDetector(
+                      onTap: () =>
+                          FocusScope.of(context).requestFocus(_unfocusNode),
+                      child: Padding(
+                        padding: MediaQuery.of(context).viewInsets,
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.8,
+                          child: PanicAttackDataWidget(),
                         ),
-                      )
-                          .then((result) {
-                        try {
-                          _model.requestCompleted1 = true;
-                          _model.requestLastUniqueKey1 =
-                              dateTimeFromSecondsSinceEpoch(functions.unixTrunc(
-                                      getCurrentTimestamp.secondsSinceEpoch,
-                                      3600))
-                                  .toString();
-                        } finally {}
-                        return result;
-                      }),
-                      builder: (context, snapshot) {
-                        // Customize what your widget looks like when it's loading.
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: SizedBox(
-                              width: 50.0,
-                              height: 50.0,
-                              child: SpinKitThreeBounce(
-                                color: FlutterFlowTheme.of(context).secondary,
-                                size: 50.0,
-                              ),
+                      ),
+                    );
+                  },
+                ).then((value) => setState(() {}));
+              },
+              backgroundColor: FlutterFlowTheme.of(context).tertiary,
+              icon: FaIcon(
+                FontAwesomeIcons.exclamationCircle,
+                color: FlutterFlowTheme.of(context).primaryText,
+                size: 25.0,
+              ),
+              elevation: 8.0,
+              label: Text(
+                FFLocalizations.of(context).getText(
+                  'f3g1htjq' /* Log panic attack */,
+                ),
+                style: FlutterFlowTheme.of(context).titleMedium,
+              ),
+            ).animateOnPageLoad(
+                animationsMap['floatingActionButtonOnPageLoadAnimation']!),
+            appBar: AppBar(
+              backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+              automaticallyImplyLeading: false,
+              title: InkWell(
+                splashColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onDoubleTap: () async {
+                  FFAppState().update(() {
+                    FFAppState().debug = !FFAppState().debug;
+                  });
+                },
+                child: Text(
+                  FFLocalizations.of(context).getText(
+                    '3hi10kxx' /* Home */,
+                  ),
+                  style: FlutterFlowTheme.of(context).headlineMedium.override(
+                        fontFamily: 'Poppins',
+                        color: FlutterFlowTheme.of(context).secondary,
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+              ),
+              actions: [
+                Align(
+                  alignment: AlignmentDirectional(0.0, 0.0),
+                  child: wrapWithModel(
+                    model: _model.debugBtnModel,
+                    updateCallback: () => setState(() {}),
+                    child: DebugBtnWidget(),
+                  ),
+                ),
+              ],
+              centerTitle: true,
+              elevation: 2.0,
+            ),
+            body: Align(
+              alignment: AlignmentDirectional(0.0, -1.0),
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  FFAppState().clearLatestReportsCache();
+                  FFAppState().clearReportsSummaryCache();
+                  setState(() {
+                    FFAppState().clearLatestReportsCacheKey(
+                        _model.requestLastUniqueKey1);
+                    _model.requestCompleted1 = false;
+                  });
+                  await _model.waitForRequestCompleted1();
+                  setState(() {
+                    FFAppState().clearReportsSummaryCacheKey(
+                        _model.requestLastUniqueKey2);
+                    _model.requestCompleted2 = false;
+                  });
+                  await _model.waitForRequestCompleted2();
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding:
+                            EdgeInsetsDirectional.fromSTEB(0.0, 32.0, 0.0, 0.0),
+                        child: FutureBuilder<List<AttackReportsRow>>(
+                          future: FFAppState()
+                              .latestReports(
+                            uniqueQueryKey: dateTimeFromSecondsSinceEpoch(
+                                    functions.unixTrunc(
+                                        getCurrentTimestamp.secondsSinceEpoch,
+                                        3600))
+                                .toString(),
+                            requestFn: () => AttackReportsTable().queryRows(
+                              queryFn: (q) => q
+                                  .eq(
+                                    'deleted',
+                                    false,
+                                  )
+                                  .order('created_at'),
+                              limit: 7,
                             ),
-                          );
-                        }
-                        List<AttackReportsRow> columnAttackReportsRowList =
-                            snapshot.data!;
-                        return Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: List.generate(
-                              columnAttackReportsRowList.length, (columnIndex) {
-                            final columnAttackReportsRow =
-                                columnAttackReportsRowList[columnIndex];
-                            return Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  16.0, 5.0, 16.0, 5.0),
-                              child: InkWell(
-                                splashColor: Colors.transparent,
-                                focusColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () async {
-                                  if (Navigator.of(context).canPop()) {
-                                    context.pop();
-                                  }
-                                  context.pushNamed(
-                                    'AttackDetails',
-                                    queryParameters: {
-                                      'report': serializeParam(
-                                        columnAttackReportsRow,
-                                        ParamType.SupabaseRow,
-                                      ),
-                                    }.withoutNulls,
-                                  );
-                                },
-                                child: Card(
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  elevation: 4.0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        8.0, 8.0, 16.0, 8.0),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        FaIcon(
-                                          FontAwesomeIcons.solidCircle,
-                                          color: () {
-                                            if (columnAttackReportsRow.rate <
-                                                20) {
-                                              return FlutterFlowTheme.of(
-                                                      context)
-                                                  .secondary;
-                                            } else if (columnAttackReportsRow
-                                                    .rate <
-                                                50) {
-                                              return FlutterFlowTheme.of(
-                                                      context)
-                                                  .warning;
-                                            } else {
-                                              return FlutterFlowTheme.of(
-                                                      context)
-                                                  .error;
-                                            }
-                                          }(),
-                                          size: 8.0,
-                                        ),
-                                        Expanded(
-                                          child: Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    8.0, 0.0, 0.0, 0.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  functions.capitalize(
-                                                      dateTimeFormat(
-                                                    'relative',
-                                                    columnAttackReportsRow
-                                                        .createdAt!,
-                                                    locale: FFLocalizations.of(
-                                                            context)
-                                                        .languageCode,
-                                                  )),
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .titleLarge,
-                                                ),
-                                                Text(
-                                                  '(${dateTimeFormat(
-                                                    'MMMEd',
-                                                    columnAttackReportsRow
-                                                        .createdAt,
-                                                    locale: FFLocalizations.of(
-                                                            context)
-                                                        .languageCode,
-                                                  )})',
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .labelMedium,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        if (columnAttackReportsRow.notes !=
-                                                null &&
-                                            columnAttackReportsRow.notes != '')
-                                          Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    8.0, 0.0, 0.0, 0.0),
-                                            child: FaIcon(
-                                              FontAwesomeIcons.stickyNote,
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondary,
-                                              size: 16.0,
-                                            ),
-                                          ),
-                                        if (columnAttackReportsRow.location !=
-                                                null &&
-                                            columnAttackReportsRow.location !=
-                                                '')
-                                          Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    8.0, 0.0, 0.0, 0.0),
-                                            child: FaIcon(
-                                              FontAwesomeIcons.mapMarkerAlt,
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondary,
-                                              size: 16.0,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
+                          )
+                              .then((result) {
+                            try {
+                              _model.requestCompleted1 = true;
+                              _model.requestLastUniqueKey1 =
+                                  dateTimeFromSecondsSinceEpoch(
+                                          functions.unixTrunc(
+                                              getCurrentTimestamp
+                                                  .secondsSinceEpoch,
+                                              3600))
+                                      .toString();
+                            } finally {}
+                            return result;
+                          }),
+                          builder: (context, snapshot) {
+                            // Customize what your widget looks like when it's loading.
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: SizedBox(
+                                  width: 50.0,
+                                  height: 50.0,
+                                  child: SpinKitThreeBounce(
+                                    color:
+                                        FlutterFlowTheme.of(context).secondary,
+                                    size: 50.0,
                                   ),
                                 ),
-                              ),
-                            );
-                          }),
-                        );
-                      },
-                    ),
-                  ),
-                  FutureBuilder<List<AttackReportsSummaryRow>>(
-                    future: FFAppState()
-                        .reportsSummary(
-                      uniqueQueryKey: dateTimeFromSecondsSinceEpoch(
-                              functions.unixTrunc(
-                                  getCurrentTimestamp.secondsSinceEpoch, 3600))
-                          .toString(),
-                      requestFn: () => AttackReportsSummaryTable().queryRows(
-                        queryFn: (q) => q.order('start_time'),
-                        limit: 24,
-                      ),
-                    )
-                        .then((result) {
-                      try {
-                        _model.requestCompleted2 = true;
-                        _model.requestLastUniqueKey2 =
-                            dateTimeFromSecondsSinceEpoch(functions.unixTrunc(
-                                    getCurrentTimestamp.secondsSinceEpoch,
-                                    3600))
-                                .toString();
-                      } finally {}
-                      return result;
-                    }),
-                    builder: (context, snapshot) {
-                      // Customize what your widget looks like when it's loading.
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: SizedBox(
-                            width: 50.0,
-                            height: 50.0,
-                            child: SpinKitThreeBounce(
-                              color: FlutterFlowTheme.of(context).secondary,
-                              size: 50.0,
-                            ),
-                          ),
-                        );
-                      }
-                      List<AttackReportsSummaryRow>
-                          pageViewAttackReportsSummaryRowList = snapshot.data!;
-                      return Container(
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.height * 0.4,
-                        child: Stack(
-                          children: [
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 0.0, 0.0, 40.0),
-                              child: PageView.builder(
-                                controller: _model.pageViewController ??=
-                                    PageController(
-                                        initialPage: min(
-                                            0,
-                                            pageViewAttackReportsSummaryRowList
-                                                    .length -
-                                                1)),
-                                scrollDirection: Axis.vertical,
-                                itemCount:
-                                    pageViewAttackReportsSummaryRowList.length,
-                                itemBuilder: (context, pageViewIndex) {
-                                  final pageViewAttackReportsSummaryRow =
-                                      pageViewAttackReportsSummaryRowList[
-                                          pageViewIndex];
-                                  return Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        32.0, 5.0, 32.0, 5.0),
-                                    child: InkWell(
-                                      splashColor: Colors.transparent,
-                                      focusColor: Colors.transparent,
-                                      hoverColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () async {
-                                        context.pushNamed(
-                                          'MonthDetails',
-                                          queryParameters: {
-                                            'monthDetails': serializeParam(
-                                              pageViewAttackReportsSummaryRow,
-                                              ParamType.SupabaseRow,
+                              );
+                            }
+                            List<AttackReportsRow> columnAttackReportsRowList =
+                                snapshot.data!;
+                            return Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: List.generate(
+                                  columnAttackReportsRowList.length,
+                                  (columnIndex) {
+                                final columnAttackReportsRow =
+                                    columnAttackReportsRowList[columnIndex];
+                                return Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      16.0, 5.0, 16.0, 5.0),
+                                  child: InkWell(
+                                    splashColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      if (Navigator.of(context).canPop()) {
+                                        context.pop();
+                                      }
+                                      context.pushNamed(
+                                        'AttackDetails',
+                                        queryParameters: {
+                                          'report': serializeParam(
+                                            columnAttackReportsRow,
+                                            ParamType.SupabaseRow,
+                                          ),
+                                        }.withoutNulls,
+                                      );
+                                    },
+                                    child: Card(
+                                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                      elevation: 4.0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      child: Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            8.0, 8.0, 16.0, 8.0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            FaIcon(
+                                              FontAwesomeIcons.solidCircle,
+                                              color: () {
+                                                if (columnAttackReportsRow
+                                                        .rate <
+                                                    20) {
+                                                  return FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondary;
+                                                } else if (columnAttackReportsRow
+                                                        .rate <
+                                                    50) {
+                                                  return FlutterFlowTheme.of(
+                                                          context)
+                                                      .warning;
+                                                } else {
+                                                  return FlutterFlowTheme.of(
+                                                          context)
+                                                      .error;
+                                                }
+                                              }(),
+                                              size: 8.0,
                                             ),
-                                          }.withoutNulls,
-                                        );
-                                      },
-                                      child: Card(
-                                        clipBehavior:
-                                            Clip.antiAliasWithSaveLayer,
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryBackground,
-                                        elevation: 4.0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                        child: Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  8.0, 8.0, 16.0, 8.0),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              FaIcon(
-                                                FontAwesomeIcons.solidCircle,
-                                                color: () {
-                                                  if (pageViewAttackReportsSummaryRow
-                                                          .rate! <
-                                                      20.0) {
-                                                    return FlutterFlowTheme.of(
-                                                            context)
-                                                        .secondary;
-                                                  } else if (pageViewAttackReportsSummaryRow
-                                                          .rate! <
-                                                      50.0) {
-                                                    return FlutterFlowTheme.of(
-                                                            context)
-                                                        .warning;
-                                                  } else {
-                                                    return FlutterFlowTheme.of(
-                                                            context)
-                                                        .error;
-                                                  }
-                                                }(),
-                                                size: 8.0,
-                                              ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          8.0, 0.0, 0.0, 0.0),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        functions.dateToMonthsAgo(
-                                                            pageViewAttackReportsSummaryRow
-                                                                .startTime!,
-                                                            3,
+                                            Expanded(
+                                              child: Padding(
+                                                padding: EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                                        8.0, 0.0, 0.0, 0.0),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      functions.capitalize(
+                                                          dateTimeFormat(
+                                                        'relative',
+                                                        columnAttackReportsRow
+                                                            .createdAt!,
+                                                        locale:
                                                             FFLocalizations.of(
                                                                     context)
-                                                                .languageCode),
-                                                        style:
-                                                            FlutterFlowTheme.of(
+                                                                .languageCode,
+                                                      )),
+                                                      style:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .titleLarge,
+                                                    ),
+                                                    Text(
+                                                      '(${dateTimeFormat(
+                                                        'MMMEd',
+                                                        columnAttackReportsRow
+                                                            .createdAt,
+                                                        locale:
+                                                            FFLocalizations.of(
                                                                     context)
-                                                                .titleLarge,
-                                                      ),
-                                                      Text(
-                                                        '(${pageViewAttackReportsSummaryRow.rate?.toString()})',
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelMedium,
-                                                      ),
-                                                    ],
-                                                  ),
+                                                                .languageCode,
+                                                      )})',
+                                                      style:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .labelMedium,
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
+                                            ),
+                                            if (columnAttackReportsRow.notes !=
+                                                    null &&
+                                                columnAttackReportsRow.notes !=
+                                                    '')
                                               Padding(
                                                 padding: EdgeInsetsDirectional
                                                     .fromSTEB(
@@ -717,6 +538,12 @@ class _MainPageWidgetState extends State<MainPageWidget>
                                                   size: 16.0,
                                                 ),
                                               ),
+                                            if (columnAttackReportsRow
+                                                        .location !=
+                                                    null &&
+                                                columnAttackReportsRow
+                                                        .location !=
+                                                    '')
                                               Padding(
                                                 padding: EdgeInsetsDirectional
                                                     .fromSTEB(
@@ -729,72 +556,280 @@ class _MainPageWidgetState extends State<MainPageWidget>
                                                   size: 16.0,
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
-                            Align(
-                              alignment: AlignmentDirectional(1.0, 0.0),
-                              child: Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    16.0, 16.0, 16.0, 16.0),
-                                child:
-                                    smooth_page_indicator.SmoothPageIndicator(
-                                  controller: _model.pageViewController ??=
-                                      PageController(
-                                          initialPage: min(
-                                              0,
-                                              pageViewAttackReportsSummaryRowList
-                                                      .length -
-                                                  1)),
-                                  count: pageViewAttackReportsSummaryRowList
-                                      .length,
-                                  axisDirection: Axis.vertical,
-                                  onDotClicked: (i) async {
-                                    await _model.pageViewController!
-                                        .animateToPage(
-                                      i,
-                                      duration: Duration(milliseconds: 500),
-                                      curve: Curves.ease,
-                                    );
-                                  },
-                                  effect:
-                                      smooth_page_indicator.ExpandingDotsEffect(
-                                    expansionFactor: 3.0,
-                                    spacing: 8.0,
-                                    radius: 16.0,
-                                    dotWidth: 16.0,
-                                    dotHeight: 8.0,
-                                    dotColor:
-                                        FlutterFlowTheme.of(context).accent1,
-                                    activeDotColor:
-                                        FlutterFlowTheme.of(context).secondary,
-                                    paintStyle: PaintingStyle.fill,
                                   ),
+                                );
+                              }),
+                            );
+                          },
+                        ),
+                      ),
+                      FutureBuilder<List<AttackReportsSummaryRow>>(
+                        future: FFAppState()
+                            .reportsSummary(
+                          uniqueQueryKey: dateTimeFromSecondsSinceEpoch(
+                                  functions.unixTrunc(
+                                      getCurrentTimestamp.secondsSinceEpoch,
+                                      3600))
+                              .toString(),
+                          requestFn: () =>
+                              AttackReportsSummaryTable().queryRows(
+                            queryFn: (q) => q.order('start_time'),
+                            limit: 24,
+                          ),
+                        )
+                            .then((result) {
+                          try {
+                            _model.requestCompleted2 = true;
+                            _model.requestLastUniqueKey2 =
+                                dateTimeFromSecondsSinceEpoch(
+                                        functions.unixTrunc(
+                                            getCurrentTimestamp
+                                                .secondsSinceEpoch,
+                                            3600))
+                                    .toString();
+                          } finally {}
+                          return result;
+                        }),
+                        builder: (context, snapshot) {
+                          // Customize what your widget looks like when it's loading.
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: SizedBox(
+                                width: 50.0,
+                                height: 50.0,
+                                child: SpinKitThreeBounce(
+                                  color: FlutterFlowTheme.of(context).secondary,
+                                  size: 50.0,
                                 ),
                               ),
+                            );
+                          }
+                          List<AttackReportsSummaryRow>
+                              pageViewAttackReportsSummaryRowList =
+                              snapshot.data!;
+                          return Container(
+                            width: double.infinity,
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            child: Stack(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 0.0, 0.0, 40.0),
+                                  child: PageView.builder(
+                                    controller: _model.pageViewController ??=
+                                        PageController(
+                                            initialPage: min(
+                                                0,
+                                                pageViewAttackReportsSummaryRowList
+                                                        .length -
+                                                    1)),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount:
+                                        pageViewAttackReportsSummaryRowList
+                                            .length,
+                                    itemBuilder: (context, pageViewIndex) {
+                                      final pageViewAttackReportsSummaryRow =
+                                          pageViewAttackReportsSummaryRowList[
+                                              pageViewIndex];
+                                      return Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            32.0, 5.0, 32.0, 5.0),
+                                        child: InkWell(
+                                          splashColor: Colors.transparent,
+                                          focusColor: Colors.transparent,
+                                          hoverColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () async {
+                                            context.pushNamed(
+                                              'MonthDetails',
+                                              queryParameters: {
+                                                'monthDetails': serializeParam(
+                                                  pageViewAttackReportsSummaryRow,
+                                                  ParamType.SupabaseRow,
+                                                ),
+                                              }.withoutNulls,
+                                            );
+                                          },
+                                          child: Card(
+                                            clipBehavior:
+                                                Clip.antiAliasWithSaveLayer,
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
+                                            elevation: 4.0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(
+                                                      8.0, 8.0, 16.0, 8.0),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  FaIcon(
+                                                    FontAwesomeIcons
+                                                        .solidCircle,
+                                                    color: () {
+                                                      if (pageViewAttackReportsSummaryRow
+                                                              .rate! <
+                                                          20.0) {
+                                                        return FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondary;
+                                                      } else if (pageViewAttackReportsSummaryRow
+                                                              .rate! <
+                                                          50.0) {
+                                                        return FlutterFlowTheme
+                                                                .of(context)
+                                                            .warning;
+                                                      } else {
+                                                        return FlutterFlowTheme
+                                                                .of(context)
+                                                            .error;
+                                                      }
+                                                    }(),
+                                                    size: 8.0,
+                                                  ),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  8.0,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  0.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            functions.dateToMonthsAgo(
+                                                                pageViewAttackReportsSummaryRow
+                                                                    .startTime!,
+                                                                3,
+                                                                FFLocalizations.of(
+                                                                        context)
+                                                                    .languageCode),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .titleLarge,
+                                                          ),
+                                                          Text(
+                                                            '(${pageViewAttackReportsSummaryRow.rate?.toString()})',
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .labelMedium,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsetsDirectional
+                                                            .fromSTEB(8.0, 0.0,
+                                                                0.0, 0.0),
+                                                    child: FaIcon(
+                                                      FontAwesomeIcons
+                                                          .stickyNote,
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .secondary,
+                                                      size: 16.0,
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsetsDirectional
+                                                            .fromSTEB(8.0, 0.0,
+                                                                0.0, 0.0),
+                                                    child: FaIcon(
+                                                      FontAwesomeIcons
+                                                          .mapMarkerAlt,
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .secondary,
+                                                      size: 16.0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Align(
+                                  alignment: AlignmentDirectional(1.0, 0.0),
+                                  child: Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        16.0, 16.0, 16.0, 16.0),
+                                    child: smooth_page_indicator
+                                        .SmoothPageIndicator(
+                                      controller: _model.pageViewController ??=
+                                          PageController(
+                                              initialPage: min(
+                                                  0,
+                                                  pageViewAttackReportsSummaryRowList
+                                                          .length -
+                                                      1)),
+                                      count: pageViewAttackReportsSummaryRowList
+                                          .length,
+                                      axisDirection: Axis.vertical,
+                                      onDotClicked: (i) async {
+                                        await _model.pageViewController!
+                                            .animateToPage(
+                                          i,
+                                          duration: Duration(milliseconds: 500),
+                                          curve: Curves.ease,
+                                        );
+                                      },
+                                      effect: smooth_page_indicator
+                                          .ExpandingDotsEffect(
+                                        expansionFactor: 3.0,
+                                        spacing: 8.0,
+                                        radius: 16.0,
+                                        dotWidth: 16.0,
+                                        dotHeight: 8.0,
+                                        dotColor: FlutterFlowTheme.of(context)
+                                            .accent1,
+                                        activeDotColor:
+                                            FlutterFlowTheme.of(context)
+                                                .secondary,
+                                        paintStyle: PaintingStyle.fill,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
+                          );
+                        },
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 1.0,
+                        height: 100.0,
+                        decoration: BoxDecoration(),
+                      ),
+                    ],
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 1.0,
-                    height: 100.0,
-                    decoration: BoxDecoration(),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }

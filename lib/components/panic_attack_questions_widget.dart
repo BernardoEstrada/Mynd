@@ -45,6 +45,8 @@ class _PanicAttackQuestionsWidgetState
   void initState() {
     super.initState();
     _model = createModel(context, () => PanicAttackQuestionsModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

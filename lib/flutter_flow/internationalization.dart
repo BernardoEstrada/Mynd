@@ -437,7 +437,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
   },
   // MonthDetails
   {
-    'uy2s7nyk': {
+    'pwo6gupw': {
       'en': 'Home',
       'es': '',
     },

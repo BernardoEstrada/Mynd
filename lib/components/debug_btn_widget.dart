@@ -30,6 +30,8 @@ class _DebugBtnWidgetState extends State<DebugBtnWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => DebugBtnModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
