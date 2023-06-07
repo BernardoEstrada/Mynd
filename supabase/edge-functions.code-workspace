@@ -1,0 +1,31 @@
+{
+  "folders": [
+    {
+      "name": "project-root",
+      "path": "../"
+    },
+    {
+      "name": "supabase",
+      "path": "./"
+    },
+    {
+      "name": "supabase-functions",
+      "path": "functions"
+    },
+    {
+      "name": "supabase-migrations",
+      "path": "migrations"
+    },
+  ],
+  "settings": {
+    "files.exclude": {
+      "node_modules/": true,
+      "app/": true,
+      "supabase/functions/": true,
+      "supabase/migrations/": true,
+    },
+    "deno.importMap": "supabase/functions/import_map.json",
+    "deno.enable": true,
+    "deno.unstable": true
+  }
+}
